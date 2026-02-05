@@ -1,10 +1,10 @@
 from datetime import datetime
-from enum import Enum
+from enum import StrEnum
 
 from pydantic import BaseModel, ConfigDict, Field
 
 
-class BookStatus(str, Enum):
+class BookStatus(StrEnum):
     AVAILABLE = "AVAILABLE"
     BORROWED = "BORROWED"
 

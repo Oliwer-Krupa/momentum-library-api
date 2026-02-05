@@ -15,6 +15,28 @@ Interactive docs: [Swagger UI](http://localhost:8000/docs) | [ReDoc](http://loca
 When the stack starts, a one-time smoke test container runs basic API checks. It will
 exit with code `0` on success and log the steps to the console.
 
+No `.env` file is required for quickstart. `docker-compose.yml` provides default values via
+fallbacks.
+
+### Optional local overrides
+
+If you want to customize DB credentials or `DATABASE_URL`, create `.env` from the template:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+Docker Compose automatically reads `.env` from the project root.
+
+### Running outside Docker
+
+If you run the app directly on your machine, use a `DATABASE_URL` with `localhost` instead of
+`db`, for example:
+
+```bash
+DATABASE_URL=postgresql+psycopg://library:library@localhost:5432/library_db
+```
+
 ## API Endpoints
 
 | Method | Path | Body | Success | Errors |

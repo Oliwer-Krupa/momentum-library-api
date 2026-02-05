@@ -4,15 +4,15 @@ services:
     environment:
       # For production: use Docker secrets or external secret management
       # These credentials are for local development only
-      POSTGRES_USER: library
-      POSTGRES_PASSWORD: library
-      POSTGRES_DB: library_db
+      POSTGRES_USER: ${POSTGRES_USER:-library}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-library}
+      POSTGRES_DB: ${POSTGRES_DB:-library_db}
     ports:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U library -d library_db"]
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
       interval: 3s
       timeout: 3s
       retries: 10
@@ -22,7 +22,8 @@ services:
     ports:
       - "8000:8000"
     environment:
-      DATABASE_URL: "postgresql+psycopg://library:library@db:5432/library_db"
+      # Docker Compose reads .env automatically and falls back to defaults below.
+      DATABASE_URL: "${DATABASE_URL:-postgresql+psycopg://library:library@db:5432/library_db}"
     depends_on:
       db:
         condition: service_healthy

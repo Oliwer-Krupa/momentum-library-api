@@ -1,3 +1,4 @@
+import sys
 import time
 from collections.abc import Generator
 
@@ -14,6 +15,15 @@ class Base(DeclarativeBase):
     pass
 
 
+def _safe_log(message: str) -> None:
+    """Print logs safely across consoles with different encodings."""
+    encoding = getattr(sys.stdout, "encoding", None) or "utf-8"
+    safe_message = message.encode(encoding, errors="replace").decode(
+        encoding, errors="replace"
+    )
+    print(safe_message)
+
+
 def get_db() -> Generator[Session, None, None]:
     db = SessionLocal()
     try:
@@ -27,14 +37,14 @@ def init_db(retries: int = 5, delay: float = 2.0) -> None:
     for attempt in range(1, retries + 1):
         try:
             Base.metadata.create_all(bind=engine)
-            print(f"✓ Database initialized successfully (attempt {attempt})")
+            _safe_log(f"Database initialized successfully (attempt {attempt})")
             return
         except Exception as e:
             if attempt == retries:
-                print(f"✗ Database initialization failed after {retries} attempts")
+                _safe_log(f"Database initialization failed after {retries} attempts")
                 raise
-            print(
-                f"⚠ DB connection attempt {attempt}/{retries} failed: {e}. "
+            _safe_log(
+                f"DB connection attempt {attempt}/{retries} failed: {e}. "
                 f"Retrying in {delay}s..."
             )
             time.sleep(delay)
